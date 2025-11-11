@@ -28,37 +28,72 @@ const SignupView = () => {
   const [image, setImage] = useState("");
   const [suck, setSuck] = useState(false);
 
-
+  
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     profile: "",
   });
+
+  const DEFAULT_AVATAR = "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
   async function imageUploader(event) {
-    setSuck(false);
-    setFile(event.target.files[0].name);
+  setSuck(false);
 
-    const formdata = new FormData();
-    formdata.append("file", event.target.files[0]);
-    formdata.append("ml_default", "image");
+  const fileObj = event.target.files?.[0];
 
-    formdata.append("upload_preset", "new-upload");
-
-    try {
-      const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dfd7uzelx/image/upload",
-        formdata
-      );
-      setImage(response.data.secure_url);
-      if (response.data.secure_url) {
-
-        setSuck(true);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  // ✅ If no file selected → use default avatar + enable signup
+  if (!fileObj) {
+    setImage(DEFAULT_AVATAR);
+    setSuck(true);
+    return;
   }
+
+  setFile(fileObj.name);
+
+  const formdata = new FormData();
+  formdata.append("file", fileObj);
+  formdata.append("upload_preset", "new-upload"); // ✅ Correct your preset
+
+  try {
+    const response = await axios.post(
+      "https://api.cloudinary.com/v1_1/dfd7uzelx/image/upload",
+      formdata
+    );
+
+    setImage(response.data.secure_url);
+    setSuck(true);
+  } catch (error) {
+    console.error(error);
+    setImage(DEFAULT_AVATAR);
+    setSuck(true);
+  }
+}
+
+  // async function imageUploader(event) {
+  //   setSuck(false);
+  //   setFile(event.target.files[0].name);
+
+  //   const formdata = new FormData();
+  //   formdata.append("file", event.target.files[0]);
+  //   formdata.append("ml_default", "image");
+
+  //   formdata.append("upload_preset", "new-upload");
+
+  //   try {
+  //     const response = await axios.post(
+  //       "https://api.cloudinary.com/v1_1/dfd7uzelx/image/upload",
+  //       formdata
+  //     );
+  //     setImage(response.data.secure_url);
+  //     if (response.data.secure_url) {
+
+  //       setSuck(true);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
 
 
@@ -72,7 +107,7 @@ const SignupView = () => {
     const errors = validate();
     if (Object.keys(errors).length !== 0) return;
     // console.log(image);
-    formData.profile = image;
+    formData.profile = image || DEFAULT_AVATAR;
     const data = await signup(formData);
 
     if (data.error) {
@@ -177,7 +212,7 @@ const SignupView = () => {
             <Button sx={{ color: "white" }} fullWidth>Hello</Button>
           </TextField>
           <ErrorAlert error={serverError} />
-          <Button type="submit" fullWidth variant="contained" sx={{ my: 2, ":hover": { filter: 'brightness(0.6)' }, backgroundColor: "secondary.main" }} disabled={!suck} >
+          <Button type="submit" fullWidth variant="contained" sx={{ my: 2, ":hover": { filter: 'brightness(0.6)' }, backgroundColor: "secondary.main" }} >
             Sign Up
           </Button>
         </Box>

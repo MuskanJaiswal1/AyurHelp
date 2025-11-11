@@ -18,7 +18,7 @@ dotenv.config();
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
   cors: {
-    origin: ["http://localhost:3000", "https://ayur-vaidya-cqre.vercel.app"],
+    origin: ["http://localhost:3000","http://localhost:4000", "https://ayur-vaidya-cqre.vercel.app"],
     creadentials: true,
   },
 });
@@ -33,10 +33,6 @@ mongoose.connect(
     console.log("MongoDB connected");
   }
 );
-
-httpServer.listen(process.env.PORT || 4000, () => {
-  console.log("Listening");
-});
 
 app.use(express.json());
 app.use(cors());
@@ -53,3 +49,7 @@ if (process.env.NODE_ENV == "production") {
     res.sendFile(path.join(__dirname, "client/build", "index.html"));
   });
 }
+
+httpServer.listen(process.env.PORT || 4000, () => {
+  console.log("Listening");
+});

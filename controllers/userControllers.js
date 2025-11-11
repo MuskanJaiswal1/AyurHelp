@@ -5,6 +5,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Follow = require("../models/Follow");
 const { default: mongoose } = require("mongoose");
+require("dotenv").config();
+
+
 
 const getUserDict = (token, user) => {
   return {
@@ -81,7 +84,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(buildToken(user), process.env.TOKEN_KEY);
-    console.log(user)
+    // console.log(user)
     return res.json(getUserDict(token, user));
   } catch (err) {
     console.log(err);
